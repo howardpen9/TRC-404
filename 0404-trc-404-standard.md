@@ -1,5 +1,5 @@
 - **TEP**: [404]
-- **title**: TRC-404 Standard 
+- **title**: Semi-fungible token standard 
 - **status**: Draft
 - **type**: Contract Interface
 - **authors**: [kojhliang](https://github.com/kojhliang), [howardpen9](https://github.com/howardpen9),[sidebyandrew](https://github.com/sidebyandrew)
@@ -8,22 +8,22 @@
 - **replaced by**: -
 
 # Summary
-TRC-404 is an mixed [Jetton standar](https://github.com/ton-blockchain/TEPs/blob/master/text/0074-jettons-standard.md)/ [NFT standard](https://github.com/ton-blockchain/TEPs/blob/master/text/0062-nft-standard.md) implementation with native liquidity and fractionalization for semi-fungible tokens.Fully compatible with existing Jetton and NFT standard.
 
+A semi-fungible token(SFT) standard that combines the [Jetton](https://github.com/ton-blockchain/TEPs/blob/master/text/0074-jettons-standard.md) and [NFT](https://github.com/ton-blockchain/TEPs/blob/master/text/0062-nft-standard.md) standards with native liquidity and fractionalization, as well as full compatibility.
 
 # Motivation
 
-The TRC404 protocol can increase the liquidity of NFT transactions, achieve fragmentation of NFTs, and facilitate the exchange between different NFTs.  
+This protocol can increase the liquidity of NFT transactions, achieve fragmentation of NFTs, and facilitate the exchange between different NFTs.  
 
-TRC404 standard describes:
+SFT standard describes:
 
-* The way of TRC404 jetton transfers.
-* The way of TRC404 NFT transfers.
+* The way of SFT jetton transfers.
+* The way of SFT NFT transfers.
 
 
 # Guide
 
-The core process of the TRC404 protocol are as follow:
+The core process of the TRC404 protocol are as following:
 1.Transfer TRC404 jetton: When userA transfer an TRC404 jetton to userB,userA might burn one of userA's NFT,and TRC404 protocol might mint an new TRC404 NFT for userB.
 
 2.Transfer TRC404 NFT: When userA transfer an TRC404 NFT to userB,the TRC404 jetton balance of userA will decrease one,the TRC404 jetton balance of userA will increase one.
@@ -35,10 +35,10 @@ The first project implemented TRC404 protocol: [TRC404 probably not found](https
 
 
 In order to fully compatible with existing Jetton and NFT standard.TRC404 standard contains four contracts: 
-1.TRC404 Master(Compatible with jetton master standard cotract)  
-2.TRC404 Wallet(Compatible with jetton wallet standard cotract)  
-3.TRC404 Nft Collection(Compatible with nft collection standard cotract)  
-2.TRC404 Nft Item(Compatible with nft item standard cotract)  
+1.TRC404 Master(Compatible with jetton master standard contract)  
+2.TRC404 Wallet(Compatible with jetton wallet standard contract)  
+3.TRC404 NFT Collection(Compatible with nft collection standard contract)  
+2.TRC404 NFT Item(Compatible with nft item standard contract)  
 
 
 ## Jetton master contract
@@ -48,8 +48,8 @@ Must implement `get_jetton_data()` and `get_wallet_address(slice owner_address)`
 ## TRC404 wallet smart contract
 For contract data storage, the content of the following three attributes must be saved:
 
-`nft_collection_address` - address of the TRC404 Nft Collection contract address.
-`owned_nft_dict` - dictionary of the TRC404 Nft owned by user.
+`nft_collection_address` - address of the TRC404 NFT Collection contract address.
+`owned_nft_dict` - dictionary of the TRC404 NFT owned by user.
 `owned_nft_number` -  number of NFTs owned by user.
 
 Must implement:
@@ -88,10 +88,10 @@ transfer#0f8a7ea5 query_id:uint64 amount:(VarUInteger 16) destination:MsgAddress
 2. there is no enough TRC404 jettons on the sender wallet
 3. there is no enough TON (with respect to jetton own storage fee guidelines and operation costs) to process operation, deploy receiver's jetton-wallet and send `forward_ton_amount`.
 
-**Otherwise should do:**
+**Otherwise, should do:**
 
 1. Decrease TRC404 jetton amount on sender wallet by `amount` and Send `internal_transfer` to receiver TRC404 wallet (and optionally deploy it). About the TL-B schema of `internal_transfer` message,please reference the Jetton standard. 
-2. Calculat the number of nft that needs to be burned. If the number is more than zero,delect and select n(n>=1) nft item index(Might be the smallest,biggest one,etc.) from  `owned_nft_dict` ,then send n `reduce_one_nft` messages  to `nft_collection_address` .
+2. Calculate the number of nft that needs to be burned. If the number is more than zero, delete and select n(n>=1) nft item index(Might be the smallest,biggest one,etc.) from  `owned_nft_dict` ,then send n `reduce_one_nft` messages  to `nft_collection_address` .
 
   
 
@@ -124,10 +124,10 @@ internal_transfer#0x178d4519 query_id:uint64 amount:(VarUInteger 16) from:MsgAdd
 
 1. message is not from the TRC404 wallet contract.
 
-**Otherwise should do:**
+**Otherwise, should do:**
 
-1. Increase TRC404 jetton amount on reciver TRC404 wallet by `amount` .
-2. Calculat the number of nft that needs to be minted.If the number is more than zero, send n `add_nft_supply` messages  to `nft_collection_address`.
+1. Increase TRC404 jetton amount on receiver TRC404 wallet by `amount` .
+2. Calculate the number of nft that needs to be minted.If the number is more than zero, send n `add_nft_supply` messages  to `nft_collection_address`.
 
 
 ### Get-methods
@@ -174,7 +174,7 @@ add_nft_supply#71d2a5a3 query_id:uint64 item_index:uint64
 
 1. message is not from the TRC404 wallet contract.
 
-**Otherwise should do:**
+**Otherwise, should do:**
 
 1. According the `owned_nft_limit`,calculate the correct the nft number need to be minted. 
    If `current_nft_balance` >= `owned_nft_limit`,`correct_new_nft_number` = 0  
@@ -211,7 +211,7 @@ reduce_one_nft#40d7c55d query_id:uint64 item_index:uint64
 
 1. message is not from the TRC404 wallet contract.
 
-**Otherwise should do:**
+**Otherwise, should do:**
 
 1. Decrease `total_supply`  on TRC404 nft collection contract by one .
 2. Send  message to nft item contract to burn this contract.
@@ -245,14 +245,14 @@ request_transfer_one_ft_and_nft#4476fc05 query_id:uint64 item_index:uint64
 
 1. message is not from the nft item contract.
 
-**Otherwise should do:**
+**Otherwise, should do:**
 
 1. Send  message to sender's TRC404 wallet to decrease `owned_nft_number` by one and delete the nft_item_index from `owned_nft_dict`.
 2. Send  message to receiver's TRC404 wallet to increase `owned_nft_number` by one and add the nft_item_index into  `owned_nft_dict`.
 
 
 ### Get-methods
-Must implement `get_collection_data()`,`get_nft_address_by_index(int index)` and `get_nft_content(int index, cell individual_content)`  as Nft standard described.
+Must implement `get_collection_data()`,`get_nft_address_by_index(int index)` and `get_nft_content(int index, cell individual_content)`  as NFT standard described.
 
 
 ## TRC404 nft item smart contract
@@ -293,7 +293,7 @@ TL-B schema of inbound message:
    If the contract cannot guarantee this, it must immediately stop executing the request and throw error.
    `max_tx_gas_price` is the price in Toncoins of maximum transaction gas limit of NFT habitat workchain. For the basechain it can be obtained from [`ConfigParam 21`](https://github.com/ton-blockchain/ton/blob/78e72d3ef8f31706f30debaf97b0d9a2dfa35475/crypto/block/block.tlb#L660) from `gas_limit` field.
 
-**Otherwise should do:**
+**Otherwise, should do:**
 
 1. change current owner of NFT to `new_owner` address.
 2. if `forward_amount > 0` send message to `new_owner` address with `forward_amount` nanotons attached and with the following layout:
@@ -309,12 +309,12 @@ TL-B schema of inbound message:
 
 
 ### Get-methods
-Must implement `get_nft_data()`  as Nft standard described.
+Must implement `get_nft_data()`  as NFT standard described.
 
 ## TL-B Schema
 Notice: In order to fully compatible with existing Jetton and NFT standard.
 The TL-B schema of TRC404 jetton `transfer` and `internal_transfer` are the same with existing Jetton standard.
-The TL-B schema of TRC404 Nft `transfer` and `ownership_assigned` are the same with existing Nft standard.
+The TL-B schema of TRC404 NFT `transfer` and `ownership_assigned` are the same with existing NFT standard.
 Here we only list the TL-B schemas that are not exist in both the Jetton and NFT standards.
 
 
@@ -370,7 +370,7 @@ Tags were calculated via tlbc as follows (request_flag is equal to `0x7fffffff` 
 
 
 # Drawbacks
-Because TRC404 protocol might burn Nfts and mint Nfts when user transfer TRC404 jetton,the gas fee will higer than common Jetton transfer and Nft transfer.
+Because TRC404 protocol might burn NFTs and mint NFTs when user transfer TRC404 jetton,the gas fee will higher than common Jetton transfer and NFT transfer.
 
 
 # Rationale and alternatives
@@ -388,6 +388,5 @@ None
 # Future possibilities
 
 1. TRC404 NFT wrap service(Make non TRC404 NFT support TRC404 protocol)
-﻿
-2. TRC404 NFT swap platform(let different NFT(like game Nft,etc.) can easily swap each other)
+2. TRC404 NFT swap platform(let different NFT(like game NFT,etc.) can easily swap each other)
 
