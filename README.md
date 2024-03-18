@@ -8,10 +8,10 @@ Official website: https://trc-404.xyz
 npm run test
 
 ## Run on Testnet
-Create a new .env file in the root folder.
-Input content like this:
-mnemonics_1="your wallet1 key word"
-mnemonics_2="your wallet2 key word"
+Create a new .env file in the root folder.  
+Input content like this:  
+mnemonics_1="your wallet1 key word"  
+mnemonics_2="your wallet2 key word"  
 
-save this file,then run:
-npm run start
+save this file,then run:  
+npm run start  

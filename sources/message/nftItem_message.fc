@@ -41,7 +41,7 @@ int op::deployNftItem()  asm "0x78ccd28 PUSHINT";
 
 (int, slice,slice  )  load_DeployNftItemMsg(slice in_msg_body) {
     int query_id = in_msg_body~load_uint(64);
-    slice owner_address = in_msg_body~load_msg_addr();  ;; owner address(user's client wallet,like tonkeeper wallet) of user's erc404 wallet 
+    slice owner_address = in_msg_body~load_msg_addr();  ;; owner address(user's client wallet,like tonkeeper wallet) of user's trc404 wallet 
     slice response_address = in_msg_body~load_msg_addr(); ;; the init sender address, need to send excess msg to this address at last
     return (query_id, owner_address,response_address);
 }
@@ -69,7 +69,7 @@ cell burnNftItemMsg(int query_id,slice from,slice response_address){
 (int,slice, slice) load_BurnNftItemMsg(slice in_msg_body){
       int query_id = in_msg_body~load_uint(64);
       ;;,use this from client wallet address calculate user nft contract address,check if the same with sender address
-      slice from = in_msg_body~load_msg_addr();   ;; owner address(user's client wallet,like tonkeeper wallet) of user's erc404 wallet 
+      slice from = in_msg_body~load_msg_addr();   ;; owner address(user's client wallet,like tonkeeper wallet) of user's trc404 wallet 
       slice response_address = in_msg_body~load_msg_addr(); ;; will send excess msg to this address
    return (query_id, from, response_address);    
 }
@@ -83,7 +83,7 @@ cell burnNftItemMsg(int query_id,slice from,slice response_address){
 ;; cell transferNftItemMsg(int query_id,slice new_owner, slice response_destination) {
 ;;      return   begin_cell().store_uint(op::transfer_nft_item(), 32)
 ;;                          .store_uint(query_id, 64)
-;;                          .store_slice(new_owner)                 ;;new owner's client wallet of new ower's erc404 wallet 
+;;                          .store_slice(new_owner)                 ;;new owner's client wallet of new ower's trc404 wallet 
 ;;                          .store_slice(response_destination)
 ;;                          .end_cell();        
 ;; }
