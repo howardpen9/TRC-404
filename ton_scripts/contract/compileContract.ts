@@ -1,6 +1,7 @@
 import * as fs from "fs";
-import { Address, beginCell, contractAddress, toNano,  internal, fromNano, Cell, OpenedContract, Dictionary } from "@ton/core";
-import {TonClient4, TonClient,WalletContractV4} from "@ton/ton";
+import * as path from "path";
+import { Address, beginCell, contractAddress, toNano, internal, fromNano, Cell, OpenedContract, Dictionary } from "@ton/core";
+import { TonClient4, TonClient, WalletContractV4 } from "@ton/ton";
 import { compileFunc } from "@ton-community/func-js";
 import { client, getWalletContract } from "./clientAndWallet";
 import { buildOnchainMetadata } from "../utils/helpers";
@@ -16,6 +17,14 @@ async function compileFuncFile(name: string) {
         console.error("compile " + name + " contract error:", compileResult.message);
     } else {
         const contractPath = "./build/" + name + ".compiled.base64";
+       // const dirPath = path.join(, "./build/");
+       let dirPath= "./build/";
+       try{
+         fs.accessSync(dirPath,fs.constants.F_OK);
+       }catch(error){
+              fs.mkdirSync(dirPath);
+       }
+        
         result = Cell.fromBoc(Buffer.from(compileResult.codeBoc, "base64"))[0].toBoc().toString("base64");
         fs.writeFileSync(contractPath, result);
         //output as json
@@ -36,7 +45,7 @@ export type CompiledCodeList = {
 
 export let owned_nft_limit = 5;
 export let freemint_max_supply = 1000;
-export let freemint_price =1 ; //1 tton
+export let freemint_price = 1; //1 tton
 
 
 
@@ -58,19 +67,19 @@ export async function getTrc404WalletAddressAndInit(user_client_wallet: Address,
         .storeRef(jetton_wallet_code) //;; nft_item_code
         .storeAddress(nft_collection_address) // ;; jetton_wallet_code
         .storeDict(Dictionary.empty())//owned nft list
-        .storeUint(0,64)   //owned_nft_number
+        .storeUint(0, 64)   //owned_nft_number
         .endCell();
 
     let state_init = { code: jetton_wallet_code, data: wallet_init_data };
 
     let address = contractAddress(0, state_init);
 
-    return {address,state_init};
+    return { address, state_init };
 }
 
-export async function getTrc404NftItemAddressAndInit(item_index:number,erc404_nft_item_code: Cell, nft_collection_address: Address) {
+export async function getTrc404NftItemAddressAndInit(item_index: number, erc404_nft_item_code: Cell, nft_collection_address: Address) {
     let nftItem_init_data = beginCell()
-         .storeUint(item_index, 64)            //;; item_index
+        .storeUint(item_index, 64)            //;; item_index
         .storeAddress(nft_collection_address) // ;; nft_collection_address
         .endCell();
 
@@ -78,22 +87,22 @@ export async function getTrc404NftItemAddressAndInit(item_index:number,erc404_nf
 
     let address = contractAddress(0, state_init);
 
-    return {address,state_init};
+    return { address, state_init };
 }
 
 
 
 export async function getTrc404CollectionAndMasterAddress(compliedCodes: CompiledCodeList, admin_address: Address) {
     //********1. init Trc404 collection state and calculate collection contrtact address*/
-    
-    let seed= Math.floor(Math.random() * 10001); //in order to make different contract
-    
+
+    let seed = Math.floor(Math.random() * 10001); //in order to make different contract
+
     // on chain way to store collection content
     const collecionParams = {
         image: "https://github.com/kojhliang/Trc-404-Not-Found/blob/main/logo-trc404.png?raw=true",
-        name: "Test"+seed+"TRC-404 Replicant NFT",
+        name: "Test" + seed + "TRC-404 Replicant NFT",
         description: "TRC-404 is an experimental, mixed Jetton / NFT implementation with native liquidity and fractionalization for semi-fungible tokens.",
-        social_linnks: ['https://x.com/ton_trc404','https://t.me/trc404news','https://trc-404.xyz'],
+        social_linnks: ['https://x.com/ton_trc404', 'https://t.me/trc404news', 'https://trc-404.xyz'],
         marketplace: "https://getgems.io"
     };
     // Create content Cell
@@ -105,9 +114,9 @@ export async function getTrc404CollectionAndMasterAddress(compliedCodes: Compile
     // let newContent = beginCell().storeInt(OFFCHAIN_CONTENT_PREFIX, 8).storeStringRefTail(string_first).endCell();
 
     let royalty_params = beginCell().storeUint(0, 16)   //numerator
-                                  .storeUint(100, 16)   //denominator
-                                  .storeAddress(admin_address)    //destination owner_address
-                                  .endCell();   //means 0/100 no royalty
+        .storeUint(100, 16)   //denominator
+        .storeAddress(admin_address)    //destination owner_address
+        .endCell();   //means 0/100 no royalty
 
     let collection_init_data = beginCell()
         .storeAddress(admin_address)
@@ -124,11 +133,11 @@ export async function getTrc404CollectionAndMasterAddress(compliedCodes: Compile
 
     let deployTrc404CollectionContract = contractAddress(0, collection_init);
 
-    
+
     //********2. init Trc 404 master state and calculate master contrtact address
 
     const jettonParams = {
-        name: "Test"+seed+"TRC404 Token",
+        name: "Test" + seed + "TRC404 Token",
         description: "TRC404 Token Not Found",
         symbol: "T404",
         decimals: "9",
@@ -154,7 +163,7 @@ export async function getTrc404CollectionAndMasterAddress(compliedCodes: Compile
         .storeAddress(deployTrc404CollectionContract) //;; nft_collection_address
         .storeRef(content) // ;; content
         .storeRef(compliedCodes.erc404_jetton_wallet_code) //;; jetton_wallet_code
-        .storeInt(-1,2)   //FreeMint flag, -1:true,0:false
+        .storeInt(-1, 2)   //FreeMint flag, -1:true,0:false
         .storeCoins(0)    //;;FreeMint freemint_current_supply 
         .storeCoins(toNano(freemint_max_supply))    //FreeMint freemint_max_supply  1000
         .storeCoins(toNano(freemint_price))    //;; freemint_price, 1 Ton

@@ -173,7 +173,7 @@ describe('Test Trc404 Master freeMint and withdraw ', () => {
         //check master contract balance
         expect(Master.address)
         let masterBalance = (await blockchain.getContract(Master.address)).balance;
-        console.log("masterBalance:",masterBalance); //need to spend 0.13 as gas fee
+        //console.log("masterBalance:",masterBalance); //need to spend 0.13 as gas fee
         expect(masterBalance).toBeGreaterThan(toNano(gasFee- mintAmount*0.2));
 
     })
