@@ -9,8 +9,8 @@ int sendMode::IGNORE_ERRORS()  asm "2 PUSHINT";
 int sendMode::NONE()  asm "0 PUSHINT";  ;; just spend msg_value as gas fee
 
 
-() sendMsg(int bounce,int sendMode,slice to_address,int msg_value,cell msg_body) impure inline {
-    cell msg = begin_cell()
+() sendMsg(int bounce,int sendMode, slice to_address, int msg_value, cell msg_body) impure inline {
+      cell msg = begin_cell()
                 .store_uint(bounce, 6) ;; we should not bounce here cause receiver can have uninitialized contract
                 .store_slice(to_address)
                 .store_coins(msg_value)
@@ -21,15 +21,15 @@ int sendMode::NONE()  asm "0 PUSHINT";  ;; just spend msg_value as gas fee
 }
 
 
-() sendMsgWithInitState(int bounce,int sendMode,slice to_address,int msg_value,cell msg_body,cell state_init) impure inline {
-     cell msg = begin_cell()
-                .store_uint(bounce, 6) ;; we should not bounce here cause receiver can have uninitialized contract
-                .store_slice(to_address)
-                .store_coins(msg_value)
-                .store_uint(4 + 2 + 1, 1 + 4 + 4 + 64 + 32 + 1 + 1 + 1)
-                .store_ref(state_init)
-                .store_ref(msg_body)
-                .end_cell();
+() sendMsgWithInitState(int bounce, int sendMode, slice to_address, int msg_value, cell msg_body, cell state_init) impure inline {
+      cell msg = begin_cell()
+            .store_uint(bounce, 6) ;; we should not bounce here cause receiver can have uninitialized contract
+            .store_slice(to_address)
+            .store_coins(msg_value)
+            .store_uint(4 + 2 + 1, 1 + 4 + 4 + 64 + 32 + 1 + 1 + 1)
+            .store_ref(state_init)
+            .store_ref(msg_body)
+            .end_cell();
       send_raw_message(msg, sendMode);
 }
 

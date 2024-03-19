@@ -11,7 +11,7 @@ int op::initCollection()  asm "0x75422543 PUSHINT";
 }
 
 cell initCollectionMsg(int query_id,slice master_address,slice response_address ) {
-     return begin_cell().store_uint(op::initCollection(), 32)
+    return begin_cell().store_uint(op::initCollection(), 32)
                         .store_uint(query_id,64)
                         .store_slice(master_address)
                         .store_slice(response_address)
@@ -33,7 +33,7 @@ int op::add_nft_supply() asm "0x71d2a5a3 PUSHINT";
 }
 
 cell addNftSupplyMsg( int query_id,int current_nft_balance,int new_nft_number,slice owner_address_of_sender_trc404_wallet,slice response_address){
-     return   begin_cell().store_uint(op::add_nft_supply(), 32)
+    return   begin_cell().store_uint(op::add_nft_supply(), 32)
                             .store_uint(query_id, 64)
                             .store_uint(current_nft_balance, 64)
                             .store_uint(new_nft_number, 64)
@@ -57,8 +57,8 @@ int op::reduce_one_nft() asm "0x40d7c55d PUSHINT";
 }
 
 cell reduceOneNftMsg( int query_id,int item_index,
-                    slice owner_address_of_sender_trc404_wallet,slice response_address){
-     return   begin_cell().store_uint(op::reduce_one_nft(), 32)
+    slice owner_address_of_sender_trc404_wallet,slice response_address){
+    return   begin_cell().store_uint(op::reduce_one_nft(), 32)
                             .store_uint(query_id, 64)
                             .store_uint(item_index, 64)
                             .store_slice(owner_address_of_sender_trc404_wallet)
@@ -74,7 +74,7 @@ int op::request_transfer_one_ft_and_nft() asm "0x4476fc05 PUSHINT";
 
 cell requestTransferOneFtAndNftMsg(int query_id,int item_index,slice from_addess,slice to_address,slice response_address){
 
-     return   begin_cell().store_uint(op::request_transfer_one_ft_and_nft(), 32)
+    return   begin_cell().store_uint(op::request_transfer_one_ft_and_nft(), 32)
                             .store_uint(query_id, 64)
                             .store_uint(item_index, 64)
                             .store_slice(from_addess)
@@ -89,7 +89,7 @@ cell requestTransferOneFtAndNftMsg(int query_id,int item_index,slice from_addess
     slice from_addess = in_msg_body~load_msg_addr();          ;;sender's client wallet 
     slice to_address = in_msg_body~load_msg_addr();                ;;receiver's client wallet  
     slice response_address = in_msg_body~load_msg_addr();
- return (query_id, item_index, from_addess, to_address, response_address);    
+    return (query_id, item_index, from_addess, to_address, response_address);    
 }
 
 
@@ -120,7 +120,6 @@ int load_getRoyaltyParamsMsg(slice in_msg_body){
     int query_id = in_msg_body~load_uint(64);
     return query_id;
 }
-
 
 
 int op::report_royalty_params() asm "0xa8cb00ad PUSHINT";
